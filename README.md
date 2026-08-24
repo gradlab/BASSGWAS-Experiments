@@ -3,7 +3,16 @@ _Note: to access the actively maintained version of BASSGWAS for your own experi
 
 ## Setup
 1. Use `Pkg.develop` to install the `julia` packages `BASSGWAS/BASSGWAS` and `BASSGWAS_old/BASSGWA_old`
-2. Download the input data files from the data repository and move them into the `data` directory
+2. Make sure you have a working version of `R` with the following packages:
+   - `tidyverse`
+   - `ape`
+   - `rtracklayer`
+   - `ggtree`
+   - `ggtreeExtra`
+   - `patchwork`
+   - `viridis`
+   - `RColorBrewer`
+4. Download the input data files from the data repository and move them into the `data` directory
 
 ## Layout
 - `BASSGWAS/` Package version with varying effect scale. Used for benchmarking.
