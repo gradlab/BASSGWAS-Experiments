@@ -1,5 +1,5 @@
 # Code necessary to reproduce results from the BASSGWAS manuscript
-_Note: to access the actively maintained version of BASSGWAS for your own experiments visit https://github.com/dhelekal/BASSGWAS_
+_Note: to access the actively maintained version of BASSGWAS for your own experiments, together with a small toy dataset visit https://github.com/dhelekal/BASSGWAS_
 
 ## Setup
 1. Use `Pkg.develop` to install the `julia` packages `BASSGWAS/BASSGWAS` and `BASSGWAS_old/BASSGWA_old`
