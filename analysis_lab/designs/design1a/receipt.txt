@@ -1,0 +1,26 @@
+
+--- Adaptive sampling for genome wide prediction ---
+
+ -- Input Files --
+  - Predictor matrix: data/patterns_centred.csv
+  - U matrix:         data/U.csv
+  - S matrix:         data/S.csv
+  - Observation file: design1a/data_bin.csv
+
+ Output Directory: design1a
+
+ -- Model Parameters --
+  - Prior inclusion probability mean: 5.0
+
+ -- Run Specification --
+  - Using seed:       12345
+  - Draws per chain:  1500
+  - Number of chains: 8
+  - Thinning factor:  750
+
+ -- Design Parameters --
+  - Batch size:               4
+  - Fixed samples in design?: true
+    Fixed sample file:        design1a/fix_in_design.csv
+  - Random design:            false
+

@@ -1,0 +1,162 @@
+---
+title: "Benchmark dataset analysis"
+output: rmarkdown::html_document
+---
+
+```{r, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(collapse = T, comment = "#>")
+options(tibble.print_min = 4, tibble.print_max = 4)
+```
+
+Load packages
+```{r}
+library(ape)
+library(tidyverse)
+library(ggtree)
+library(patchwork)
+library(writexl)
+```
+
+Setup
+```{r}
+    ddirs <- c("azi_mic_2", "cip", "tet10")
+    resis_snps <- read_delim("../data/resistance/2023-07-05_gc_resistance_alleles.tsv")
+    resis_mtr <- read_delim("../data/resistance/mtr_alleles.tsv")
+    resis_gene <- read_delim("../data/resistance/resistance_gene_presence_absence.tsv") 
+    resis_rrna <- read_delim("../data/resistance/rRNA_allele_summary.txt") 
+    resis_df <- resis_snps %>% 
+        left_join(resis_mtr) %>%
+        left_join(resis_gene) %>%
+        left_join(resis_rrna) %>%
+        mutate(GyrA_wt=(GyrA_91=="S") & (GyrA_95=="D")) %>%
+        mutate(ParC_wt=(ParC_86=="D") & (ParC_87=="S") & (ParC_91=="E")) %>%
+        mutate(mosaic_mtrD = mtrD=="mosaic") %>%
+        mutate(mosaic_mtrC = mtrC=="mosaic") %>%
+        mutate(tetM_pos = tetM==1) %>%
+        mutate(rRNA_pos = `23S_C2611T`>0) %>%
+        select(c(wgs_id, GyrA_wt, ParC_wt, tetM_pos, mosaic_mtrC, mosaic_mtrD, rRNA_pos))
+```
+Excel sheets
+```{r}
+sheets <- list()
+```
+TET
+```{r}
+    read_delim("../data/tet10/data_bin.csv") %>%
+        left_join(resis_df) %>%
+        rename(pheno=tet10) %>%
+        select(wgs_id, pheno, tetM_pos) %>%
+        group_by(pheno,tetM_pos) %>% 
+        summarise(n=n()) %>%
+        ungroup() %>%
+        print
+```
+10% AF
+```{r}
+    df <- read_delim("mapping/tet10_full_pips/pips.patterns.annotated.csv") %>%
+        left_join(read_delim("../data/tet10/sequences.csv")) %>%
+        arrange(-pip) %>% 
+        filter(pip > 0.1) %>%
+        rename(variant=pattern_id, PIP=pip, unitig=sequence, annotation=locus, complemented=direction) %>%
+        select(variant, PIP, contig, annotation, complemented, unitig) 
+               
+    df%>%
+        print(n=25)
+    sheets <-c(sheets, list(tet_af_10=df))
+```
+
+```{r}
+    read_delim("mapping/tet10_full_pips/pips.annotation.summaries.csv") %>%
+        arrange(-pincl) %>% 
+        print(n=25)
+```
+```{r}
+    read_delim("mapping/tet10_full_pips/pips.bwd1000.position.summaries.csv") %>%
+        arrange(-pincl) %>% 
+        print(n=25)
+```
+
+2.5% AF
+```{r}
+    df <- read_delim("mapping/tet2.5_full_pips/pips.patterns.annotated.csv") %>%
+        left_join(read_delim("../data/tet2.5/sequences.csv")) %>%
+        arrange(-pip) %>% 
+        filter(pip > 0.1) %>%
+        rename(variant=pattern_id, PIP=pip, unitig=sequence, annotation=locus, complemented=direction) %>%
+        select(variant, PIP, contig, annotation, complemented, unitig)
+        
+    df%>%
+        print(n=25)
+    sheets <-c(sheets, list(tet_af_2.5=df))
+```
+
+CIP
+```{r}
+    read_delim("../data/cip/data_bin.csv") %>%
+        left_join(resis_df) %>%
+        rename(pheno=cip) %>%
+        select(wgs_id, pheno, GyrA_wt,ParC_wt) %>%
+        group_by(pheno,GyrA_wt,ParC_wt) %>% 
+        summarise(n=n()) %>%
+        ungroup() %>%
+        print
+```
+```{r}
+    df <- read_delim("mapping/cip_full_pips/pips.patterns.annotated.csv") %>%
+        left_join(read_delim("../data/cip/sequences.csv")) %>%
+        arrange(-pip) %>% 
+        filter(pip > 0.1) %>%
+        rename(variant=pattern_id, PIP=pip, unitig=sequence, annotation=locus, complemented=direction) %>%
+        select(variant, PIP, contig, annotation, complemented, unitig)        
+    df%>%
+        print(n=25)
+    sheets <-c(sheets, list(cip_af_10=df))
+```
+```{r}
+    read_delim("mapping/cip_full_pips/pips.annotation.summaries.csv") %>%
+        arrange(-pincl) %>% 
+        print(n=25)
+```
+```{r}
+    read_delim("mapping/cip_full_pips/pips.bwd1000.position.summaries.csv") %>%
+        arrange(-pincl) %>% 
+        print(n=25)
+```
+
+AZI
+```{r}
+    read_delim("../data/azi_mic_2/data_bin.csv") %>%
+        left_join(resis_df) %>%
+        rename(pheno=azi) %>%
+        select(wgs_id, pheno, mosaic_mtrC,mosaic_mtrD,rRNA_pos) %>%
+        group_by(pheno,mosaic_mtrC,mosaic_mtrD,rRNA_pos) %>% 
+        summarise(n=n()) %>%
+        ungroup() %>%
+        print
+```
+```{r}
+    df <- read_delim("mapping/azi_mic_2_full_pips/pips.patterns.annotated.csv") %>%
+        left_join(read_delim("../data/azi_mic_2/sequences.csv")) %>%
+        arrange(-pip) %>% 
+        filter(pip > 0.1) %>%
+        rename(variant=pattern_id, PIP=pip, unitig=sequence, annotation=locus, complemented=direction) %>%
+        select(variant, PIP, contig, annotation, complemented, unitig)    
+    
+    df%>%
+        print(n=25)
+    sheets <-c(sheets, list(azi_af_10=df))
+```
+```{r}
+    read_delim("mapping/azi_mic_2_full_pips/pips.annotation.summaries.csv") %>%
+        arrange(-pincl) %>% 
+        print(n=25)
+```
+```{r}
+    read_delim("mapping/azi_mic_2_full_pips/pips.bwd1000.position.summaries.csv") %>%
+        arrange(-pincl) %>% 
+        print(n=25)
+```
+Write excel
+```{r}
+    write_xlsx(sheets, "tables/TablesPIPs.xlsx")
+```
