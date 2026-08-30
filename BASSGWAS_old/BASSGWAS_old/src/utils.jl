@@ -1,3 +1,19 @@
+# Copyright (C) 2026 David Helekal
+#
+# This file is part of BASSGWAS_old.
+#
+# BASSGWAS_old is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation, version 3.
+#
+# BASSGWAS_old is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with BASSGWAS_old. If not, see <https://www.gnu.org/licenses/>.
+
 #in place vector plus a times squared column sums
 function _vpacnormsq!(v, a, X, Y)
     size(X) != size(Y) && throw(ArgumentError("Array dimensions must match"))
